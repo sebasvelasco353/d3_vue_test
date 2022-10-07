@@ -8,17 +8,27 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import * as d3 from "d3";
+import { csv } from "d3";
+import { nest } from "d3-collection"
 
 export default {
   name: 'HomeView',
+  data() {
+    return {
+      reportes: []
+    }
+  },
   components: {
     HelloWorld
   },
   async mounted() {
-    const data = await d3.csv("/data.csv");
-    console.log(data);
-    console.log("----------------------------------------------------- here -----------------------------");
+    // get Data from public/data.csv
+    this.reportes = await csv("/data.csv");
   },
+  methods: {
+    onGroupData() {
+      return nest().key(function(d) {return d.DEPARTAMENTO;}).entries(this.reportes);
+    }
+  }
 }
 </script>
