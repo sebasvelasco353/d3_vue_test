@@ -1,36 +1,34 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <p>{{ $store.getters.getMsg }}</p>
+    <Dropdown hasAllOption hasNoneOption :options="categories" />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
 import {
   csv,
   group
 } from "d3";
+import Dropdown from "@/components/Dropdown.vue";
 
 export default {
   name: 'HomeView',
   data() {
     return {
-      reportes: [],
-      reportesGrouped: [],
       categories: ["Genre", "Publisher", "Year"]
     }
   },
   components: {
+    Dropdown
   },
   async mounted() {
-    // get Data from public/data.csv
-    this.reportes = await csv("./data.csv");
-    this.reportesGrouped = this.onGroupData();
-    console.log(this);
+    const visualizationData = await csv("./data.csv");
+    this.$store.dispatch('setVisualizationData', visualizationData);
   },
-  methods: {
-    onGroupData() {
-      return Array.from(group(this.reportes, d => d[this.categories[1]]), ([key, value]) => ({ key, value }))
+  computed: {
+    groupedVisualizationData() {
+      return Array.from(group(this.$store.getters.getVisualizationData, d => d[this.categories[1]]), ([key, value]) => ({ key, value }))
     }
   }
 }
