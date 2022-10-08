@@ -1,33 +1,36 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-import { csv } from "d3";
-import { nest } from "d3-collection"
+import {
+  csv,
+  group
+} from "d3";
 
 export default {
   name: 'HomeView',
   data() {
     return {
-      reportes: []
+      reportes: [],
+      reportesGrouped: [],
+      categories: ["Genre", "Publisher", "Year"]
     }
   },
   components: {
-    HelloWorld
   },
   async mounted() {
     // get Data from public/data.csv
-    this.reportes = await csv("/data.csv");
+    this.reportes = await csv("./data.csv");
+    this.reportesGrouped = this.onGroupData();
+    console.log(this);
   },
   methods: {
     onGroupData() {
-      return nest().key(function(d) {return d.DEPARTAMENTO;}).entries(this.reportes);
+      return Array.from(group(this.reportes, d => d[this.categories[1]]), ([key, value]) => ({ key, value }))
     }
   }
 }
