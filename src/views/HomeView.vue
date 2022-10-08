@@ -37,8 +37,8 @@ export default {
     var width = svg.attr("width") - margin;
     var height = svg.attr("height") - margin;
 
-    var xScale = scaleBand().range([0, width]).padding(0.4);
-    var yScale = scaleLinear().range([height, 0]);
+    var xScale = scaleBand().range([0, width]).padding(0.4),
+      yScale = scaleLinear().range([height, 0]);
 
     var g = svg.append("g")
       .attr("transform", "translate(" + 100 + "," + 100 + ")");
@@ -48,17 +48,42 @@ export default {
 
     g.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(axisBottom(xScale));
+      .call(axisBottom(xScale))
+      .append("text")
+      .attr("y", height - 250)
+      .attr("x", width - 100)
+      .attr("text-anchor", "end")
+      .attr("stroke", "black")
+      .text("Genere");
 
     g.append("g")
       .call(axisLeft(yScale).tickFormat(function (d) {
         return "$" + d;
-      }).ticks(10))
+      })
+        .ticks(10))
       .append("text")
+      .attr("transform", "rotate(-90)")
       .attr("y", 6)
-      .attr("dy", "0.71em")
+      .attr("dy", "-5.1em")
       .attr("text-anchor", "end")
-      .text("value");
+      .attr("stroke", "black")
+      .text("# of Games");
+
+    g.selectAll(".bar")
+      .data(this.groupedVisualizationData)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("fill", "#576574")
+      .attr("x", function (d) { return xScale(d.key); })
+      .attr("y", function (d) { return yScale(d.value.length); })
+      .attr("width", xScale.bandwidth())
+      .attr("height", function (d) { return height - yScale(d.value.length); })
+    // .delay(function (d, i) {
+    //   return i * 20;
+    // })
+    // .duration(5000)
+
+
   },
   computed: {
     groupedVisualizationData() {
@@ -67,3 +92,6 @@ export default {
   }
 }
 </script>
+<style>
+
+</style>
